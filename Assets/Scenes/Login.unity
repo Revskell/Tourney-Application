@@ -449,8 +449,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e264edf95cce8344be6ce0f1c85e2b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  authenticationEndpoint: http://127.0.0.1:13756/account
   usernameInputField: {fileID: 375980786}
   passwordInputField: {fileID: 1193877201}
+  alertText: {fileID: 1238615516}
+  loginButton: {fileID: 930280002}
 --- !u!1 &654401677
 GameObject:
   m_ObjectHideFlags: 0
@@ -742,7 +745,7 @@ GameObject:
   - component: {fileID: 930280003}
   - component: {fileID: 930280002}
   m_Layer: 5
-  m_Name: SignIn
+  m_Name: LoginButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1747,7 +1750,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Enter text...
+  m_text: Username
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1939,7 +1942,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Enter text...
+  m_text: Password
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
