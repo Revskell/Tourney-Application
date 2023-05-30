@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using System;
+using System.Text.RegularExpressions;
 
 public class Login : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class Login : MonoBehaviour
     [SerializeField] private TextMeshProUGUI alertText;
     [SerializeField] private Button loginButton;
     [SerializeField] private Button registerButton;
+
+    private const string PASSWORD_REGEX = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{5,30})";
 
     public void OnLoginClick()
     {
@@ -37,17 +40,17 @@ public class Login : MonoBehaviour
         string username = usernameInputField.text;
         string password = passwordInputField.text;
 
-        if(username.Length < 3 || username.Length > 24)
+        if(username.Length < 3 || username.Length > 30)
         {
             alertText.text = "Invalid username";
-            loginButton.interactable = true;
+            ActivateButtons(true);
             yield break;
         }
 
-        if (password.Length < 3 || password.Length > 24)
+        if (!Regex.IsMatch(password, PASSWORD_REGEX))
         {
-            alertText.text = "Invalid password";
-            loginButton.interactable = true;
+            alertText.text = "Invalid credentials";
+            ActivateButtons(true);
             yield break;
         }
 
@@ -69,25 +72,26 @@ public class Login : MonoBehaviour
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            if(!request.downloadHandler.text.Equals("Invalid Credentials")) // login success
+            LoginResponse response = JsonUtility.FromJson<LoginResponse>(request.downloadHandler.text);
+
+            if(response.code == 0) // login success
             {
                 ActivateButtons(false);
-                Account returnedAccount = JsonUtility.FromJson<Account>(request.downloadHandler.text); // retrieve data
-                alertText.text = "Welcome" + returnedAccount.username;
+                alertText.text = "Welcome" + response.data;
             }
             else
             {
                 alertText.text = "Invalid Credentials";
                 ActivateButtons(true);
             }
-
-            Debug.Log(request.downloadHandler.text);
         }
         else
         {
             ActivateButtons(true);
             alertText.text = "Error connecting to the server...";
         }
+
+        request.Dispose();
 
         yield return null;
     }
@@ -104,9 +108,9 @@ public class Login : MonoBehaviour
             yield break;
         }
 
-        if (password.Length < 3 || password.Length > 24)
+        if(!Regex.IsMatch(password, PASSWORD_REGEX))
         {
-            alertText.text = "Invalid password";
+            alertText.text = "Invalid credentials";
             ActivateButtons(true);
             yield break;
         }
@@ -129,18 +133,35 @@ public class Login : MonoBehaviour
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            if (!request.downloadHandler.text.Equals("Invalid Credentials") && !request.downloadHandler.text.Equals("Username is already taken")) // login success
+            CreateResponse response = JsonUtility.FromJson<CreateResponse>(request.downloadHandler.text);
+
+            if (response.code.Equals(0)) // login success
             {
-                Account returnedAccount = JsonUtility.FromJson<Account>(request.downloadHandler.text); // retrieve data
                 alertText.text = "Account has been created";
             }
-            else alertText.text = "Username is already taken";
-
-            Debug.Log(request.downloadHandler.text);
+            else
+            {
+                switch(response.code)
+                {
+                    case 1:
+                        alertText.text = "Invalid credentials";
+                        break;
+                    case 2:
+                        alertText.text = "Username is already taken";
+                        break;
+                    case 3:
+                        alertText.text = "Password is unsafe";
+                        break;
+                    default:
+                        alertText.text = "Error";
+                        break;
+                }
+            }
         }
         else alertText.text = "Error connecting to the server...";
 
         ActivateButtons(true);
+        request.Dispose();
 
         yield return null;
     }
