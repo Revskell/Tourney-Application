@@ -3,7 +3,6 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-using System;
 using System.Text.RegularExpressions;
 
 public class Login : MonoBehaviour
@@ -21,6 +20,8 @@ public class Login : MonoBehaviour
 
     public void OnLoginClick()
     {
+        alertText.gameObject.SetActive(true);
+        alertText.color = Color.white;
         alertText.text = "Signing in...";
         ActivateButtons(false);
 
@@ -29,6 +30,8 @@ public class Login : MonoBehaviour
 
     public void OnRegisterClick()
     {
+        alertText.gameObject.SetActive(true);
+        alertText.color = Color.white;
         alertText.text = "Creating a new account...";
         ActivateButtons(false);
 
@@ -42,6 +45,7 @@ public class Login : MonoBehaviour
 
         if(username.Length < 3 || username.Length > 30)
         {
+            alertText.color = Color.red;
             alertText.text = "Invalid username";
             ActivateButtons(true);
             yield break;
@@ -49,6 +53,7 @@ public class Login : MonoBehaviour
 
         if (!Regex.IsMatch(password, PASSWORD_REGEX))
         {
+            alertText.color = Color.red;
             alertText.text = "Invalid credentials";
             ActivateButtons(true);
             yield break;
@@ -77,10 +82,11 @@ public class Login : MonoBehaviour
             if(response.code == 0) // login success
             {
                 ActivateButtons(false);
-                alertText.text = "Welcome" + response.data;
+                MenuManager.Instance.ShowMainMenu(response.data.username);
             }
             else
             {
+                alertText.color = Color.red;
                 alertText.text = "Invalid Credentials";
                 ActivateButtons(true);
             }
@@ -88,6 +94,7 @@ public class Login : MonoBehaviour
         else
         {
             ActivateButtons(true);
+            alertText.color = Color.red;
             alertText.text = "Error connecting to the server...";
         }
 
@@ -103,6 +110,7 @@ public class Login : MonoBehaviour
 
         if (username.Length < 3 || username.Length > 24)
         {
+            alertText.color = Color.red;
             alertText.text = "Invalid username";
             ActivateButtons(true);
             yield break;
@@ -110,6 +118,7 @@ public class Login : MonoBehaviour
 
         if(!Regex.IsMatch(password, PASSWORD_REGEX))
         {
+            alertText.color = Color.red;
             alertText.text = "Invalid credentials";
             ActivateButtons(true);
             yield break;
@@ -137,24 +146,18 @@ public class Login : MonoBehaviour
 
             if (response.code.Equals(0)) // login success
             {
+                alertText.color = Color.white;
                 alertText.text = "Account has been created";
             }
             else
             {
+                alertText.color = Color.red;
                 switch(response.code)
                 {
-                    case 1:
-                        alertText.text = "Invalid credentials";
-                        break;
-                    case 2:
-                        alertText.text = "Username is already taken";
-                        break;
-                    case 3:
-                        alertText.text = "Password is unsafe";
-                        break;
-                    default:
-                        alertText.text = "Error";
-                        break;
+                    case 1: alertText.text = "Invalid credentials"; break;
+                    case 2: alertText.text = "Username is already taken"; break;
+                    case 3: alertText.text = "Password is unsafe"; break;
+                    default: alertText.text = "Error"; break;
                 }
             }
         }
