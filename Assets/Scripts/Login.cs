@@ -175,4 +175,10 @@ public class Login : MonoBehaviour
         registerButton.interactable = toggle;
     } 
 
+    public void RestartMenu()
+    {
+        ActivateButtons(true);
+        alertText.color = Color.white;
+        alertText.text = null;
+    }
 }

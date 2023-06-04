@@ -6,15 +6,18 @@ public class MenuManager : MonoBehaviour
     private static MenuManager instance;
     public static MenuManager Instance => instance;
 
-    private string username;
+    public string username;
     [SerializeField] private bool testingBool;
     [SerializeField] private TextMeshProUGUI welcomeText;
 
     [SerializeField] public GameObject logInMenuContainer;
     [SerializeField] public GameObject mainMenuContainer;
     [SerializeField] public GameObject createTourneyContainer;
+    [SerializeField] public GameObject tourneyManagerContainer;
     [SerializeField] public GameObject joinTourneyContainer;
     [SerializeField] public GameObject listTourneyContainer;
+
+    [SerializeField] public Login login;
 
     private void Awake()
     {
@@ -34,6 +37,7 @@ public class MenuManager : MonoBehaviour
         mainMenuContainer.SetActive(true);
         logInMenuContainer.SetActive(false);
         createTourneyContainer.SetActive(false);
+        tourneyManagerContainer.SetActive(false);
         joinTourneyContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
 
@@ -47,8 +51,11 @@ public class MenuManager : MonoBehaviour
         logInMenuContainer.SetActive(true);
         mainMenuContainer.SetActive(false);
         createTourneyContainer.SetActive(false);
+        tourneyManagerContainer.SetActive(false);
         joinTourneyContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
+
+        login.RestartMenu();
     }
 
     public void ShowCreateTourneyMenu()
@@ -56,6 +63,7 @@ public class MenuManager : MonoBehaviour
         createTourneyContainer.SetActive(true);
         logInMenuContainer.SetActive(false);
         mainMenuContainer.SetActive(false);
+        tourneyManagerContainer.SetActive(false);
         joinTourneyContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
     }
@@ -66,6 +74,7 @@ public class MenuManager : MonoBehaviour
         logInMenuContainer.SetActive(false);
         mainMenuContainer.SetActive(false);
         createTourneyContainer.SetActive(false);
+        tourneyManagerContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
     }
 
@@ -75,6 +84,17 @@ public class MenuManager : MonoBehaviour
         logInMenuContainer.SetActive(false);
         mainMenuContainer.SetActive(false);
         createTourneyContainer.SetActive(false);
+        tourneyManagerContainer.SetActive(false);
         joinTourneyContainer.SetActive(false);
+    }
+
+    public void ShowTourneyManagerMenu()
+    {
+        tourneyManagerContainer.SetActive(true);
+        logInMenuContainer.SetActive(false);
+        mainMenuContainer.SetActive(false);
+        createTourneyContainer.SetActive(false);
+        joinTourneyContainer.SetActive(false);
+        listTourneyContainer.SetActive(false);
     }
 }
