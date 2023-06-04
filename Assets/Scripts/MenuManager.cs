@@ -97,4 +97,9 @@ public class MenuManager : MonoBehaviour
         joinTourneyContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
     }
+
+    public void QuitApplication()
+    {
+        Application.Quit();
+    }
 }

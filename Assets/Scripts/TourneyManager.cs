@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TourneyManager : MonoBehaviour
 {
@@ -19,9 +20,36 @@ public class TourneyManager : MonoBehaviour
     public List<string> scenarioList = new List<string>();
     public List<List<string>> playerList = new List<List<string>>();
 
+    public int currentRound;
+    public int currentPageRound;
+    [SerializeField] public Button backButton;
+
+    [SerializeField] public TextMeshProUGUI tourneyTitleText;
+    [SerializeField] public TextMeshProUGUI scenarioText;
+    [SerializeField] public TextMeshProUGUI roundText;
+
+    [SerializeField] public GameObject pairingsTextPrefab;
+    [SerializeField] public GameObject gamesContainerPrefab;
+    [SerializeField] public GameObject spacerPrefab;
+
     public void StartTourney()
     {
         this.tourney = CreateTourney();
+
+        this.currentRound = 1;
+        this.currentPageRound = 1;
+
+        backButton.interactable = false;
+        tourneyTitleText.text = tourneyName;
+        scenarioText.text = scenarioList[currentPageRound-1];
+        roundText.text = "Round " + currentPageRound;
+
+        CreateContainers();
+
+        while(currentRound <= numberOfRounds)
+        {
+            break;
+        }
     }
 
     private Tourney CreateTourney()
@@ -83,5 +111,47 @@ public class TourneyManager : MonoBehaviour
         }
 
         return new Tourney(tourneyName, numberOfRounds, scenarioList, numberOfGames, numberOfPlayers, playerList);
+    }
+
+    private void CreateContainers()
+    {
+        GameObject pairingsContainer = GameObject.Find("PairingsContainer");
+        for (int i = 0; i < playerList.Count/2; i++)
+        {
+            Instantiate(pairingsTextPrefab, pairingsContainer.transform);
+            for(int j = 0; j < numberOfGames; j++)
+            {
+                Instantiate(gamesContainerPrefab, pairingsContainer.transform);
+                Instantiate(spacerPrefab, pairingsContainer.transform);
+            }
+        }
+    }
+
+    public void FillContainers()
+    {
+
+    }
+
+    public void NextRound()
+    {
+        this.currentRound++; // ojo cuidao
+        if (currentPageRound + 1 <= numberOfRounds)
+        {
+            this.currentPageRound++;
+            backButton.interactable = true;
+            scenarioText.text = scenarioList[currentPageRound-1];
+            roundText.text = "Round " + currentPageRound;
+        }
+    }
+
+    public void PreviousRound()
+    {
+        if (currentPageRound - 1 >= 1)
+        {
+            this.currentPageRound--;
+            scenarioText.text = scenarioList[currentPageRound-1];
+            roundText.text = "Round " + currentPageRound;
+        }
+        if (currentPageRound == 1) backButton.interactable = false;
     }
 }

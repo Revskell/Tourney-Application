@@ -14,8 +14,6 @@ public class Tourney
     public int nPlayers;
 
     public List<Player> playerList;
-    public List<Player> goodSide;
-    public List<Player> evilSide;
 
     public List<Round> roundList;
     public List<string> scenarioList;
@@ -30,11 +28,11 @@ public class Tourney
         this.nGames = games;
         this.nPlayers = players;
         this.scenarioList = scenarioList;
-        this.playerList = populatePlayers(playerList);
+        this.playerList = PopulatePlayers(playerList);
         this.currentRound = 1;
     }
 
-    public List<Player> populatePlayers(List<List<string>> playerList)
+    public List<Player> PopulatePlayers(List<List<string>> playerList)
     {
         List<Player> players = new List<Player>();
 
