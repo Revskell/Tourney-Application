@@ -28,6 +28,7 @@ public class TourneyManager : MonoBehaviour
     [SerializeField] public TextMeshProUGUI scenarioText;
     [SerializeField] public TextMeshProUGUI roundText;
 
+    [SerializeField] public GameObject pairingsContainer;
     [SerializeField] public GameObject pairingsTextPrefab;
     [SerializeField] public GameObject gamesContainerPrefab;
     [SerializeField] public GameObject spacerPrefab;
@@ -45,6 +46,9 @@ public class TourneyManager : MonoBehaviour
         roundText.text = "Round " + currentPageRound;
 
         CreateContainers();
+        Round startingRound = tourney.CreateRound(true, currentRound, scenarioList[currentRound-1]);
+        tourney.roundList.Add(startingRound);
+        FillContainers(startingRound);
 
         while(currentRound <= numberOfRounds)
         {
@@ -94,12 +98,11 @@ public class TourneyManager : MonoBehaviour
             if (inputFieldName == "InputNickname")
             {
                 string nickName = inputField.text;
-                if (string.IsNullOrEmpty(nickName)) name = "Nickname " + playerCounter;
+                if (string.IsNullOrEmpty(nickName)) nickName = "Nickname " + playerCounter;
                 player.Add(nickName);
-                player.Add(inputField.text);
                 counter++;
             }
-            if(counter >= 2)
+            if(counter == 2)
             {
                 counter = 0;
                 playerCounter++;
@@ -127,20 +130,138 @@ public class TourneyManager : MonoBehaviour
         }
     }
 
-    public void FillContainers()
+    public void FillContainers(Round round)
     {
+        List<Player> players = GetPlayers(round);
+        List<GameObject> pairingsTexts = GetContainers("PairingsText(Clone)");
+        List<GameObject> gamesContainers = GetContainers("GamesContainer(Clone)");
 
+        int currentPlayerIndex = 0;
+        int currentGameNumber = 1;
+
+        // Insert data into PairingsText instances
+        for (int i = 0; i < pairingsTexts.Count; i++)
+        {
+            Player goodPlayer = players[currentPlayerIndex];
+            Player evilPlayer = players[currentPlayerIndex + 1];
+
+            string pairingsTextString = $"{goodPlayer.name} \"{goodPlayer.nickname}\" vs {evilPlayer.name} \"{evilPlayer.nickname}\"";
+            pairingsTexts[i].GetComponent<TextMeshProUGUI>().text = pairingsTextString;
+
+            currentPlayerIndex += 2;
+
+            if (currentPlayerIndex >= numberOfPlayers)
+                currentPlayerIndex = 0;
+        }
+
+        // Insert data into GamesContainer instances
+        foreach (GameObject gamesContainer in gamesContainers)
+        {
+            // Insert game number into GamesText
+            string gameTextString = "Game " + currentGameNumber;
+            gamesContainer.transform.Find("GamesText").GetComponent<TextMeshProUGUI>().text = gameTextString;
+
+            // Insert player names
+            gamesContainer.transform.Find("GoodPlayer").GetComponent<TextMeshProUGUI>().text = players[currentPlayerIndex].name;
+            gamesContainer.transform.Find("EvilPlayer").GetComponent<TextMeshProUGUI>().text = players[currentPlayerIndex + 1].name;
+
+            // Insert points data
+            if(round.gameList[currentGameNumber - 1].gamePoints.Count > 1)
+            {
+                Points points = round.gameList[currentGameNumber - 1].gamePoints[currentGameNumber - 1];
+                gamesContainer.transform.Find("GainedGoodVPInput").GetComponent<TMP_InputField>().text = points.goodGainedVP.ToString();
+                gamesContainer.transform.Find("LostGoodVPInput").GetComponent<TMP_InputField>().text = points.goodLostVP.ToString();
+                gamesContainer.transform.Find("GainedEvilVPInput").GetComponent<TMP_InputField>().text = points.evilGainedVP.ToString();
+                gamesContainer.transform.Find("LostEvilVPInput").GetComponent<TMP_InputField>().text = points.evilLostVP.ToString();
+
+                // Insert leader killed data
+                TMP_Dropdown leaderKilledGoodDropdown = gamesContainer.transform.Find("LeaderKilledGoodDropdown").GetComponent<TMP_Dropdown>();
+                TMP_Dropdown leaderKilledEvilDropdown = gamesContainer.transform.Find("LeaderKilledEvilDropdown").GetComponent<TMP_Dropdown>();
+
+                leaderKilledGoodDropdown.value = points.goodHasKilledLeader ? 1 : 0;
+                leaderKilledEvilDropdown.value = points.evilHasKilledLeader ? 1 : 0;
+            }
+
+            
+
+            currentGameNumber++;
+            if (currentGameNumber > numberOfGames)
+            {
+                currentGameNumber = 1;
+                currentPlayerIndex += 2;
+                if (currentPlayerIndex >= numberOfPlayers)
+                    currentPlayerIndex = 0;
+            }
+        }
+    }
+
+    private List<Player> GetPlayers(Round round)
+    {
+        List<Player> players = new List<Player>();
+
+        for (int i = 0; i < numberOfPlayers/2; i++)
+        {
+            players.Add(round.gameList[i].goodPlayer);
+            players.Add(round.gameList[i].evilPlayer);
+        }
+
+        return players;
+    }
+
+    private List<GameObject> GetContainers(string containerName)
+    {
+        List<GameObject> containers = new List<GameObject>();
+
+        Transform[] allChildren = pairingsContainer.GetComponentsInChildren<Transform>(true);
+
+        foreach (Transform child in allChildren)
+        {
+            if (child.name.Equals(containerName))
+            {
+                containers.Add(child.gameObject);
+            }
+        }
+
+        return containers;
+    }
+
+    public bool AreAllInputsFilled()
+    {
+        bool result = true;
+
+        foreach(TMP_InputField input in pairingsContainer.GetComponentsInChildren<TMP_InputField>())
+        {
+            if (string.IsNullOrEmpty(input.text))
+            {
+                result = false;
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    public void ClearAllInputs()
+    {
+        foreach (TMP_InputField input in pairingsContainer.GetComponentsInChildren<TMP_InputField>())
+        {
+            input.text = string.Empty;
+        }
     }
 
     public void NextRound()
     {
-        this.currentRound++; // ojo cuidao
-        if (currentPageRound + 1 <= numberOfRounds)
+        if(AreAllInputsFilled())
         {
-            this.currentPageRound++;
-            backButton.interactable = true;
-            scenarioText.text = scenarioList[currentPageRound-1];
-            roundText.text = "Round " + currentPageRound;
+            this.currentRound++; // ojo cuidao
+            if (currentPageRound + 1 <= numberOfRounds)
+            {
+                this.currentPageRound++;
+                backButton.interactable = true;
+                scenarioText.text = scenarioList[currentPageRound - 1];
+                roundText.text = "Round " + currentPageRound;
+                ClearAllInputs();
+            }
         }
     }
 

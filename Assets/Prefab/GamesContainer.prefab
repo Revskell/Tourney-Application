@@ -1,5 +1,41 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6358701650161763515
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 666976705067792702}
+  m_Layer: 5
+  m_Name: End
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &666976705067792702
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6358701650161763515}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7430013940260832860}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -1214, y: 105}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7430013940023500912
 GameObject:
   m_ObjectHideFlags: 0
@@ -89,7 +125,7 @@ GameObject:
   - component: {fileID: 7430013940043372327}
   - component: {fileID: 7430013940043372326}
   m_Layer: 5
-  m_Name: LostVPInput
+  m_Name: LostEvilVPInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -265,7 +301,7 @@ GameObject:
   - component: {fileID: 7430013940186176919}
   - component: {fileID: 7430013940186176918}
   m_Layer: 5
-  m_Name: LostVPInput
+  m_Name: LostGoodVPInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -584,7 +620,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 666976705067792702}
   m_Father: {fileID: 7430013941778029930}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1448,7 +1485,7 @@ GameObject:
   - component: {fileID: 7430013940638726310}
   - component: {fileID: 7430013940638726313}
   m_Layer: 5
-  m_Name: LostVPText
+  m_Name: LostEvilVPText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2486,7 +2523,7 @@ GameObject:
   - component: {fileID: 7430013940880637285}
   - component: {fileID: 7430013940880637284}
   m_Layer: 5
-  m_Name: LeaderKilledText
+  m_Name: LeaderKilledEvilText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2782,8 +2819,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 125, y: -50}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 175, y: -50}
+  m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7430013940939095903
 CanvasRenderer:
@@ -2895,7 +2932,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 175
+    m_Left: 300
     m_Right: 0
     m_Top: 5
     m_Bottom: 0
@@ -2957,7 +2994,7 @@ GameObject:
   - component: {fileID: 7430013940989873104}
   - component: {fileID: 7430013940989873107}
   m_Layer: 5
-  m_Name: LeaderKilledDropdown
+  m_Name: LeaderKilledEvilDropdown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3229,7 +3266,7 @@ GameObject:
   - component: {fileID: 7430013941026507039}
   - component: {fileID: 7430013941026507038}
   m_Layer: 5
-  m_Name: GainedVPText
+  m_Name: GainedEvilVPText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3574,7 +3611,7 @@ GameObject:
   - component: {fileID: 7430013941229088170}
   - component: {fileID: 7430013941229088173}
   m_Layer: 5
-  m_Name: LeaderKilledDropdown
+  m_Name: LeaderKilledGoodDropdown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3846,7 +3883,7 @@ GameObject:
   - component: {fileID: 7430013941298914983}
   - component: {fileID: 7430013941298914982}
   m_Layer: 5
-  m_Name: GainedVPText
+  m_Name: GainedGoodVPText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4018,7 +4055,7 @@ GameObject:
   - component: {fileID: 7430013941324252977}
   - component: {fileID: 7430013941324252976}
   m_Layer: 5
-  m_Name: LeaderKilledText
+  m_Name: LeaderKilledGoodText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4941,7 +4978,7 @@ GameObject:
   - component: {fileID: 7430013941774418581}
   - component: {fileID: 7430013941774418580}
   m_Layer: 5
-  m_Name: LostVPText
+  m_Name: LostGoodVPText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5110,8 +5147,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 125, y: -100}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 175, y: -100}
+  m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7430013941778029929
 CanvasRenderer:
@@ -5223,7 +5260,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 175
+    m_Left: 300
     m_Right: 0
     m_Top: 5
     m_Bottom: 0
@@ -5249,7 +5286,7 @@ GameObject:
   - component: {fileID: 7430013941785048827}
   - component: {fileID: 7430013941785048826}
   m_Layer: 5
-  m_Name: GainedVPInput
+  m_Name: GainedEvilVPInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6080,7 +6117,7 @@ GameObject:
   - component: {fileID: 7430013942082682210}
   - component: {fileID: 7430013942082682213}
   m_Layer: 5
-  m_Name: GainedVPInput
+  m_Name: GainedGoodVPInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

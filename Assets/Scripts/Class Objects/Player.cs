@@ -4,13 +4,13 @@ public class Player
 {
     public string name;
     public string nickname;
-    public string force;
+    public string side;
 
-    public Player(string name, string nickname, string force)
+    public Player(string name, string nickname, string side)
     {
         this.name = name;
         this.nickname = nickname;
-        this.force = force;
+        this.side = side;
     }
 
     public Player(List<string> player)
@@ -20,7 +20,7 @@ public class Player
         {
             if (counter == 0) this.name = data;
             else if (counter == 1) this.nickname = data;
-            else if (counter == 2) this.force = data;
+            else if (counter == 2) this.side = data;
             counter++;
         }
     }
