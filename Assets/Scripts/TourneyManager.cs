@@ -33,12 +33,14 @@ public class TourneyManager : MonoBehaviour
     [SerializeField] public GameObject gamesContainerPrefab;
     [SerializeField] public GameObject spacerPrefab;
 
+    [SerializeField] public TextMeshProUGUI alertText;
+
     public void StartTourney()
     {
         this.tourney = CreateTourney();
 
         this.currentRound = 1;
-        this.currentPageRound = 1;
+        this.currentPageRound = currentRound;
 
         backButton.interactable = false;
         tourneyTitleText.text = tourneyName;
@@ -46,14 +48,8 @@ public class TourneyManager : MonoBehaviour
         roundText.text = "Round " + currentPageRound;
 
         CreateContainers();
-        Round startingRound = tourney.CreateRound(true, currentRound, scenarioList[currentRound-1]);
-        tourney.roundList.Add(startingRound);
-        FillContainers(startingRound);
-
-        while(currentRound <= numberOfRounds)
-        {
-            break;
-        }
+        tourney.CreateRound(true, currentRound, scenarioList[currentRound-1]);
+        FillContainers(tourney.roundList[0]);
     }
 
     private Tourney CreateTourney()
@@ -119,7 +115,7 @@ public class TourneyManager : MonoBehaviour
     private void CreateContainers()
     {
         GameObject pairingsContainer = GameObject.Find("PairingsContainer");
-        for (int i = 0; i < playerList.Count/2; i++)
+        for (int i = 0; i < numberOfPlayers/2; i++)
         {
             Instantiate(pairingsTextPrefab, pairingsContainer.transform);
             for(int j = 0; j < numberOfGames; j++)
@@ -139,7 +135,6 @@ public class TourneyManager : MonoBehaviour
         int currentPlayerIndex = 0;
         int currentGameNumber = 1;
 
-        // Insert data into PairingsText instances
         for (int i = 0; i < pairingsTexts.Count; i++)
         {
             Player goodPlayer = players[currentPlayerIndex];
@@ -154,35 +149,28 @@ public class TourneyManager : MonoBehaviour
                 currentPlayerIndex = 0;
         }
 
-        // Insert data into GamesContainer instances
         foreach (GameObject gamesContainer in gamesContainers)
         {
-            // Insert game number into GamesText
             string gameTextString = "Game " + currentGameNumber;
             gamesContainer.transform.Find("GamesText").GetComponent<TextMeshProUGUI>().text = gameTextString;
 
-            // Insert player names
             gamesContainer.transform.Find("GoodPlayer").GetComponent<TextMeshProUGUI>().text = players[currentPlayerIndex].name;
             gamesContainer.transform.Find("EvilPlayer").GetComponent<TextMeshProUGUI>().text = players[currentPlayerIndex + 1].name;
 
-            // Insert points data
-            if(round.gameList[currentGameNumber - 1].gamePoints.Count > 1)
+            if(round.gameList[currentGameNumber - 1].gamePoints.Count >= 1)
             {
                 Points points = round.gameList[currentGameNumber - 1].gamePoints[currentGameNumber - 1];
-                gamesContainer.transform.Find("GainedGoodVPInput").GetComponent<TMP_InputField>().text = points.goodGainedVP.ToString();
-                gamesContainer.transform.Find("LostGoodVPInput").GetComponent<TMP_InputField>().text = points.goodLostVP.ToString();
-                gamesContainer.transform.Find("GainedEvilVPInput").GetComponent<TMP_InputField>().text = points.evilGainedVP.ToString();
-                gamesContainer.transform.Find("LostEvilVPInput").GetComponent<TMP_InputField>().text = points.evilLostVP.ToString();
+                gamesContainer.transform.Find("GoodPlayer/GainedGoodVPInput").GetComponent<TMP_InputField>().text = points.goodGainedVP.ToString();
+                gamesContainer.transform.Find("GoodPlayer/LostGoodVPInput").GetComponent<TMP_InputField>().text = points.goodLostVP.ToString();
+                gamesContainer.transform.Find("EvilPlayer/GainedEvilVPInput").GetComponent<TMP_InputField>().text = points.evilGainedVP.ToString();
+                gamesContainer.transform.Find("EvilPlayer/LostEvilVPInput").GetComponent<TMP_InputField>().text = points.evilLostVP.ToString();
 
-                // Insert leader killed data
-                TMP_Dropdown leaderKilledGoodDropdown = gamesContainer.transform.Find("LeaderKilledGoodDropdown").GetComponent<TMP_Dropdown>();
-                TMP_Dropdown leaderKilledEvilDropdown = gamesContainer.transform.Find("LeaderKilledEvilDropdown").GetComponent<TMP_Dropdown>();
+                TMP_Dropdown leaderKilledGoodDropdown = gamesContainer.transform.Find("GoodPlayer/LeaderKilledGoodDropdown").GetComponent<TMP_Dropdown>();
+                TMP_Dropdown leaderKilledEvilDropdown = gamesContainer.transform.Find("EvilPlayer/LeaderKilledEvilDropdown").GetComponent<TMP_Dropdown>();
 
                 leaderKilledGoodDropdown.value = points.goodHasKilledLeader ? 1 : 0;
                 leaderKilledEvilDropdown.value = points.evilHasKilledLeader ? 1 : 0;
             }
-
-            
 
             currentGameNumber++;
             if (currentGameNumber > numberOfGames)
@@ -216,10 +204,7 @@ public class TourneyManager : MonoBehaviour
 
         foreach (Transform child in allChildren)
         {
-            if (child.name.Equals(containerName))
-            {
-                containers.Add(child.gameObject);
-            }
+            if (child.name.Equals(containerName)) containers.Add(child.gameObject);
         }
 
         return containers;
@@ -249,12 +234,54 @@ public class TourneyManager : MonoBehaviour
         }
     }
 
+    private void getGamePoints()
+    {
+        List<GameObject> containers = GetContainers("GamesContainer(Clone)");
+
+        int gamesCounter = 0;
+        for (int i = 0; i < containers.Count; i++)
+        {
+            GameObject gameContainer = containers[i];
+            Points points = new Points();
+
+            points.goodGainedVP = int.Parse(gameContainer.transform.Find("GoodPlayer/GainedGoodVPInput").GetComponent<TMP_InputField>().text);
+            points.goodLostVP = int.Parse(gameContainer.transform.Find("GoodPlayer/LostGoodVPInput").GetComponent<TMP_InputField>().text);
+            points.evilGainedVP = int.Parse(gameContainer.transform.Find("EvilPlayer/GainedEvilVPInput").GetComponent<TMP_InputField>().text);
+            points.evilLostVP = int.Parse(gameContainer.transform.Find("EvilPlayer/LostEvilVPInput").GetComponent<TMP_InputField>().text);
+
+            TMP_Dropdown leaderKilledGoodDropdown = gameContainer.transform.Find("GoodPlayer/LeaderKilledGoodDropdown").GetComponent<TMP_Dropdown>();
+            TMP_Dropdown leaderKilledEvilDropdown = gameContainer.transform.Find("EvilPlayer/LeaderKilledEvilDropdown").GetComponent<TMP_Dropdown>();
+
+            points.goodHasKilledLeader = leaderKilledGoodDropdown.value == 1;
+            points.evilHasKilledLeader = leaderKilledEvilDropdown.value == 1;
+
+            this.tourney.roundList[currentPageRound-1].gameList[i].gamePoints.Add(points);
+
+            if (gamesCounter >= numberOfGames) gamesCounter = 0;
+            else gamesCounter++;
+        }
+    }
+
     public void NextRound()
     {
         if(AreAllInputsFilled())
         {
-            this.currentRound++; // ojo cuidao
-            if (currentPageRound + 1 <= numberOfRounds)
+            alertText.color = Color.white;
+            alertText.text = "";
+
+            getGamePoints();
+
+            if(currentPageRound == currentRound && currentPageRound + 1 <= numberOfRounds)
+            {
+                this.currentRound++; // ojo cuidao
+                this.currentPageRound = currentRound;
+                tourney.CreateRound(false, currentRound, scenarioList[currentRound]); // -1 ??
+            }
+            if(currentPageRound + 1 > numberOfRounds)
+            {
+                // Move on to the result screen
+            }
+            else
             {
                 this.currentPageRound++;
                 backButton.interactable = true;
@@ -263,15 +290,25 @@ public class TourneyManager : MonoBehaviour
                 ClearAllInputs();
             }
         }
+        else
+        {
+            alertText.color = Color.red;
+            alertText.text = "Fill all the inputs first";
+        }
     }
 
     public void PreviousRound()
     {
         if (currentPageRound - 1 >= 1)
         {
+            alertText.color = Color.white;
+            alertText.text = "";
+
             this.currentPageRound--;
             scenarioText.text = scenarioList[currentPageRound-1];
             roundText.text = "Round " + currentPageRound;
+
+            FillContainers(tourney.roundList[currentPageRound-1]);
         }
         if (currentPageRound == 1) backButton.interactable = false;
     }

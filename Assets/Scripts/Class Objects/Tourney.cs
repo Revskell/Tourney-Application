@@ -43,7 +43,7 @@ public class Tourney
         return players;
     }
 
-    public Round CreateRound(bool firstRound, int roundNumber, string roundScenario)
+    public void CreateRound(bool firstRound, int roundNumber, string roundScenario)
     {
         Round round = new Round(roundNumber, roundScenario);
 
@@ -58,23 +58,30 @@ public class Tourney
 
                 if (goodPlayer == null || evilPlayer == null) break;
 
-                // Create a new game and add it to the round's gameList
                 Game game = new Game(goodPlayer, evilPlayer, new List<Points>());
                 round.gameList.Add(game);
 
-                // Remove the paired players from the available players list
                 availablePlayers.Remove(goodPlayer);
                 availablePlayers.Remove(evilPlayer);
             }
-
-            return round;
         }
         else
         {
 
         }
 
-        return round;
+        this.roundList.Add(round);
+    }
+
+    public void AddGamePoints(int nRound, List<List<Points>> pointList)
+    {
+        foreach(Game game in roundList[nRound].gameList)
+        {
+            foreach(Points point in game.gamePoints)
+            {
+
+            }
+        }
     }
 
     private Player GetPlayerBySide(List<Player> players, string side)
