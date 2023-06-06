@@ -53,7 +53,6 @@ public class Tourney
         if (!firstRound)
         {
             availablePlayers = RankPlayers(roundNumber);
-            foreach (Player player in availablePlayers) Debug.Log(player.name + " VP: " + player.totalVP); 
             rankedPlayerList = new List<Player>();
             foreach (Player player in availablePlayers) rankedPlayerList.Add(player);
         }

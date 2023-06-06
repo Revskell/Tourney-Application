@@ -219,6 +219,7 @@ public class TourneyManager : MonoBehaviour
         List<GameObject> containers = GetContainers("GamesContainer(Clone)");
 
         int gamesCounter = 0;
+        int currentGame = 0;
         for (int i = 0; i < containers.Count; i++)
         {
             GameObject gameContainer = containers[i];
@@ -235,9 +236,13 @@ public class TourneyManager : MonoBehaviour
             points.goodHasKilledLeader = leaderKilledGoodDropdown.value == 1;
             points.evilHasKilledLeader = leaderKilledEvilDropdown.value == 1;
 
-            this.tourney.roundList[currentRound-1].gameList[i].gamePoints.Add(points);
+            this.tourney.roundList[currentRound-1].gameList[currentGame].gamePoints.Add(points);
 
-            if (gamesCounter >= numberOfGames) gamesCounter = 0;
+            if (gamesCounter + 1 >= numberOfGames)
+            {
+                gamesCounter = 0;
+                currentGame++;
+            }
             else gamesCounter++;
         }
     }
@@ -251,19 +256,8 @@ public class TourneyManager : MonoBehaviour
 
             getGamePoints();
 
-            string toTest = "Points: ";
-            foreach(Game game in tourney.roundList[currentRound-1].gameList)
-            {
-                Debug.Log("Match: " + game.goodPlayer.name + " " + game.goodPlayer.nickname + " " + game.goodPlayer.side + " | " + game.evilPlayer.name + " " + game.evilPlayer.nickname + " " + game.evilPlayer.side);
-                foreach (Points point in game.gamePoints)
-                {
-                    toTest += "goodGainedVP: " + point.goodGainedVP + " goodLostVP: " + point.goodLostVP + " goodHasKilledLeader: " + point.goodHasKilledLeader + " evilGainedVP: " + point.evilGainedVP + 
-                        " evilLostVP: " + point.evilLostVP + " evilHasKilledLeader: " + point.evilHasKilledLeader;
-                }
-                Debug.Log(toTest);
-                toTest = "Points: ";
-            }
-            toTest = "Player: ";
+            
+            string toTest = "Player: ";
             foreach(Player player in tourney.rankedPlayerList)
             {
                 Debug.Log(player.name + " Total VP: " + player.totalVP + " TotalGainedVP: " + player.totalGainedVP + " TotalLostVP: " + player.totalLostVP + " TotalKilled: " + player.leadersKilled);
