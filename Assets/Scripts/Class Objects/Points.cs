@@ -11,6 +11,8 @@ public class Points
     public int evilLostVP;
     public bool evilHasKilledLeader;
 
+    public Points() { }
+
     public Points(int goodGainedVP, int goodLostVP, bool goodHasKilledLeader, int evilGainedVP, int evilLostVP, bool evilHasKilledLeader)
     {
         this.goodGainedVP = goodGainedVP;
