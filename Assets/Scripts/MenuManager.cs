@@ -19,6 +19,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] public GameObject tourneyResultsContainer;
 
     [SerializeField] public Login login;
+    [SerializeField] public TourneyRequest tourneyRequest;
     [SerializeField] public TourneyResultsHandler tourneyResults;
 
     private void Awake()
@@ -45,6 +46,7 @@ public class MenuManager : MonoBehaviour
         tourneyResultsContainer.SetActive(false);
 
         if (this.username != null) this.username = username;
+        else username = "";
 
         welcomeText.text = "Welcome " + username;
     }
@@ -106,7 +108,7 @@ public class MenuManager : MonoBehaviour
         tourneyResultsContainer.SetActive(false);
     }
 
-    public void ShowTourneyResultsMenu(Tourney tourney)
+    public void ShowTourneyResultsMenu(Tourney tourney, bool creatingTourney)
     {
         tourneyResultsContainer.SetActive(true);
         mainMenuContainer.SetActive(false);
@@ -116,7 +118,10 @@ public class MenuManager : MonoBehaviour
         joinTourneyContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
 
-        // hacer aqui la wea de rest api
+        if (creatingTourney)
+        {
+            StartCoroutine(tourneyRequest.TryCreateTourney(tourney));
+        }
 
         tourneyResults.ShowResults(tourney);
     }

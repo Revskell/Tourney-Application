@@ -217,18 +217,7 @@ public class TourneyManager : MonoBehaviour
             fillGamePoints();
             tourney.RankPlayers(currentRound-1);
 
-            string toTest = "Points: ";
-            foreach (Game game in tourney.roundList[currentRound - 1].gameList)
-            {
-                Debug.Log("Match: " + game.goodPlayer.name + " " + game.goodPlayer.nickname + " " + game.goodPlayer.side + " | " + game.evilPlayer.name + " " + game.evilPlayer.nickname + " " + game.evilPlayer.side);
-                Points point = game.gamePoints;
-                toTest += "goodGainedVP: " + point.goodGainedVP + " goodLostVP: " + point.goodLostVP + " goodHasKilledLeader: " + point.goodHasKilledLeader + " evilGainedVP: " + point.evilGainedVP +
-                    " evilLostVP: " + point.evilLostVP + " evilHasKilledLeader: " + point.evilHasKilledLeader;
-                Debug.Log(toTest);
-                toTest = "Points: ";
-            }
-
-            if (currentRound >= numberOfRounds) MenuManager.Instance.ShowTourneyResultsMenu(tourney);
+            if (currentRound >= numberOfRounds) MenuManager.Instance.ShowTourneyResultsMenu(tourney, true);
             else
             {
                 this.currentRound++;

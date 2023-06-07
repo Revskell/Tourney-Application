@@ -7,7 +7,7 @@ public class Tourney
 {
     public string _id;
     public int tourneyCode;
-    public Account tourneyOwner;
+    public string tourneyOwner;
     public string tourneyName;
     public int nRounds;
     public int nPlayers;
@@ -21,7 +21,7 @@ public class Tourney
     public Tourney(string tourneyName, int rounds, List<string> scenarioList, int players, List<List<string>> playerList)
     {
         this.tourneyCode = Random.Range(10000000, 99999999); // later check that it's not in use
-        this.tourneyOwner = new Account(MenuManager.Instance.username);
+        this.tourneyOwner = MenuManager.Instance.username;
         this.tourneyName = tourneyName;
         this.nRounds = rounds;
         this.nPlayers = players;
