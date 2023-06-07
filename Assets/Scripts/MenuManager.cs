@@ -16,8 +16,10 @@ public class MenuManager : MonoBehaviour
     [SerializeField] public GameObject tourneyManagerContainer;
     [SerializeField] public GameObject joinTourneyContainer;
     [SerializeField] public GameObject listTourneyContainer;
+    [SerializeField] public GameObject tourneyResultsContainer;
 
     [SerializeField] public Login login;
+    [SerializeField] public TourneyResultsHandler tourneyResults;
 
     private void Awake()
     {
@@ -40,6 +42,7 @@ public class MenuManager : MonoBehaviour
         tourneyManagerContainer.SetActive(false);
         joinTourneyContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
+        tourneyResultsContainer.SetActive(false);
 
         if (this.username != null) this.username = username;
 
@@ -54,6 +57,7 @@ public class MenuManager : MonoBehaviour
         tourneyManagerContainer.SetActive(false);
         joinTourneyContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
+        tourneyResultsContainer.SetActive(false);
 
         login.RestartMenu();
     }
@@ -66,6 +70,7 @@ public class MenuManager : MonoBehaviour
         tourneyManagerContainer.SetActive(false);
         joinTourneyContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
+        tourneyResultsContainer.SetActive(false);
     }
 
     public void ShowJoinTourneyMenu()
@@ -76,6 +81,7 @@ public class MenuManager : MonoBehaviour
         createTourneyContainer.SetActive(false);
         tourneyManagerContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
+        tourneyResultsContainer.SetActive(false);
     }
 
     public void ShowListTourneyMenu()
@@ -86,6 +92,7 @@ public class MenuManager : MonoBehaviour
         createTourneyContainer.SetActive(false);
         tourneyManagerContainer.SetActive(false);
         joinTourneyContainer.SetActive(false);
+        tourneyResultsContainer.SetActive(false);
     }
 
     public void ShowTourneyManagerMenu()
@@ -96,6 +103,22 @@ public class MenuManager : MonoBehaviour
         createTourneyContainer.SetActive(false);
         joinTourneyContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
+        tourneyResultsContainer.SetActive(false);
+    }
+
+    public void ShowTourneyResultsMenu(Tourney tourney)
+    {
+        tourneyResultsContainer.SetActive(true);
+        mainMenuContainer.SetActive(false);
+        logInMenuContainer.SetActive(false);
+        createTourneyContainer.SetActive(false);
+        tourneyManagerContainer.SetActive(false);
+        joinTourneyContainer.SetActive(false);
+        listTourneyContainer.SetActive(false);
+
+        // hacer aqui la wea de rest api
+
+        tourneyResults.ShowResults(tourney);
     }
 
     public void QuitApplication()

@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -13,7 +15,6 @@ public class TourneyManager : MonoBehaviour
 
     public string tourneyName;
     public int numberOfRounds;
-    public int numberOfGames;
     public int numberOfPlayers;
 
     public List<string> scenarioList = new List<string>();
@@ -37,13 +38,14 @@ public class TourneyManager : MonoBehaviour
         this.tourney = CreateTourney();
 
         this.currentRound = 1;
+        this.tourney.FillRankedPlayerList();
 
         tourneyTitleText.text = tourneyName;
-        scenarioText.text = scenarioList[currentRound-1];
+        scenarioText.text = scenarioList[currentRound - 1];
         roundText.text = "Round " + currentRound;
 
         CreateContainers();
-        tourney.CreateRound(true, currentRound, scenarioList[currentRound-1]);
+        tourney.CreateRound(currentRound, scenarioList[currentRound - 1]);
         FillContainers(tourney.roundList[0]);
     }
 
@@ -60,7 +62,6 @@ public class TourneyManager : MonoBehaviour
             string dropdownName = dropdown.gameObject.name;
 
             if (dropdownName == "DropdownRounds") numberOfRounds = int.Parse(dropdown.options[dropdown.value].text);
-            else if (dropdownName == "DropdownGames") numberOfGames = int.Parse(dropdown.options[dropdown.value].text);
             else if (dropdownName == "DropdownPlayers") numberOfPlayers = int.Parse(dropdown.options[dropdown.value].text);
         }
 
@@ -77,7 +78,7 @@ public class TourneyManager : MonoBehaviour
         foreach (TMP_InputField inputField in inputFields)
         {
             string inputFieldName = inputField.gameObject.name;
-            
+
             if (inputFieldName == "InputName")
             {
                 player = new List<string>();
@@ -93,7 +94,7 @@ public class TourneyManager : MonoBehaviour
                 player.Add(nickName);
                 counter++;
             }
-            if(counter == 2)
+            if (counter == 2)
             {
                 counter = 0;
                 playerCounter++;
@@ -104,20 +105,17 @@ public class TourneyManager : MonoBehaviour
             }
         }
 
-        return new Tourney(tourneyName, numberOfRounds, scenarioList, numberOfGames, numberOfPlayers, playerList);
+        return new Tourney(tourneyName, numberOfRounds, scenarioList, numberOfPlayers, playerList);
     }
 
     private void CreateContainers()
     {
         GameObject pairingsContainer = GameObject.Find("PairingsContainer");
-        for (int i = 0; i < numberOfPlayers/2; i++)
+        for (int i = 0; i < numberOfPlayers / 2; i++)
         {
             Instantiate(pairingsTextPrefab, pairingsContainer.transform);
-            for(int j = 0; j < numberOfGames; j++)
-            {
-                Instantiate(gamesContainerPrefab, pairingsContainer.transform);
-                Instantiate(spacerPrefab, pairingsContainer.transform);
-            }
+            Instantiate(gamesContainerPrefab, pairingsContainer.transform);
+            Instantiate(spacerPrefab, pairingsContainer.transform);
         }
     }
 
@@ -128,8 +126,7 @@ public class TourneyManager : MonoBehaviour
         List<GameObject> gamesContainers = GetContainers("GamesContainer(Clone)");
 
         int currentPlayerIndex = 0;
-        int currentGameNumber = 1;
-
+        
         for (int i = 0; i < pairingsTexts.Count; i++)
         {
             Player goodPlayer = players[currentPlayerIndex];
@@ -144,6 +141,7 @@ public class TourneyManager : MonoBehaviour
                 currentPlayerIndex = 0;
         }
 
+        int currentGameNumber = 1;
         foreach (GameObject gamesContainer in gamesContainers)
         {
             string gameTextString = "Game " + currentGameNumber;
@@ -152,14 +150,9 @@ public class TourneyManager : MonoBehaviour
             gamesContainer.transform.Find("GoodPlayer").GetComponent<TextMeshProUGUI>().text = players[currentPlayerIndex].name;
             gamesContainer.transform.Find("EvilPlayer").GetComponent<TextMeshProUGUI>().text = players[currentPlayerIndex + 1].name;
 
+            currentPlayerIndex += 2;
             currentGameNumber++;
-            if (currentGameNumber > numberOfGames)
-            {
-                currentGameNumber = 1;
-                currentPlayerIndex += 2;
-                if (currentPlayerIndex >= numberOfPlayers)
-                    currentPlayerIndex = 0;
-            }
+            if (currentPlayerIndex >= numberOfPlayers) currentPlayerIndex = 0;
         }
     }
 
@@ -167,7 +160,7 @@ public class TourneyManager : MonoBehaviour
     {
         List<Player> players = new List<Player>();
 
-        for (int i = 0; i < numberOfPlayers/2; i++)
+        for (int i = 0; i < numberOfPlayers / 2; i++)
         {
             players.Add(round.gameList[i].goodPlayer);
             players.Add(round.gameList[i].evilPlayer);
@@ -194,7 +187,7 @@ public class TourneyManager : MonoBehaviour
     {
         bool result = true;
 
-        foreach(TMP_InputField input in pairingsContainer.GetComponentsInChildren<TMP_InputField>())
+        foreach (TMP_InputField input in pairingsContainer.GetComponentsInChildren<TMP_InputField>())
         {
             if (string.IsNullOrEmpty(input.text))
             {
@@ -214,12 +207,51 @@ public class TourneyManager : MonoBehaviour
         }
     }
 
-    private void getGamePoints()
+    public void NextRound()
+    {
+        if (AreAllInputsFilled())
+        {
+            alertText.color = Color.white;
+            alertText.text = "";
+
+            fillGamePoints();
+            tourney.RankPlayers(currentRound-1);
+
+            string toTest = "Points: ";
+            foreach (Game game in tourney.roundList[currentRound - 1].gameList)
+            {
+                Debug.Log("Match: " + game.goodPlayer.name + " " + game.goodPlayer.nickname + " " + game.goodPlayer.side + " | " + game.evilPlayer.name + " " + game.evilPlayer.nickname + " " + game.evilPlayer.side);
+                Points point = game.gamePoints;
+                toTest += "goodGainedVP: " + point.goodGainedVP + " goodLostVP: " + point.goodLostVP + " goodHasKilledLeader: " + point.goodHasKilledLeader + " evilGainedVP: " + point.evilGainedVP +
+                    " evilLostVP: " + point.evilLostVP + " evilHasKilledLeader: " + point.evilHasKilledLeader;
+                Debug.Log(toTest);
+                toTest = "Points: ";
+            }
+
+            if (currentRound >= numberOfRounds) MenuManager.Instance.ShowTourneyResultsMenu(tourney);
+            else
+            {
+                this.currentRound++;
+                tourney.CreateRound(currentRound, scenarioList[currentRound - 1]);
+                scenarioText.text = scenarioList[currentRound - 1];
+                roundText.text = "Round " + currentRound;
+                ClearAllInputs();
+                FillContainers(tourney.roundList[currentRound - 1]);
+            }
+        }
+        else
+        {
+            alertText.color = Color.red;
+            alertText.text = "Fill all the inputs first";
+        }
+    }
+
+    private List<Points> getGamePoints()
     {
         List<GameObject> containers = GetContainers("GamesContainer(Clone)");
 
-        int gamesCounter = 0;
-        int currentGame = 0;
+        List<Points> pointsList = new List<Points>();
+
         for (int i = 0; i < containers.Count; i++)
         {
             GameObject gameContainer = containers[i];
@@ -233,54 +265,31 @@ public class TourneyManager : MonoBehaviour
             TMP_Dropdown leaderKilledGoodDropdown = gameContainer.transform.Find("GoodPlayer/LeaderKilledGoodDropdown").GetComponent<TMP_Dropdown>();
             TMP_Dropdown leaderKilledEvilDropdown = gameContainer.transform.Find("EvilPlayer/LeaderKilledEvilDropdown").GetComponent<TMP_Dropdown>();
 
-            points.goodHasKilledLeader = leaderKilledGoodDropdown.value == 1;
-            points.evilHasKilledLeader = leaderKilledEvilDropdown.value == 1;
+            points.goodHasKilledLeader = leaderKilledGoodDropdown.options[leaderKilledGoodDropdown.value].text == "Yes";
+            points.evilHasKilledLeader = leaderKilledEvilDropdown.options[leaderKilledEvilDropdown.value].text == "Yes";
 
-            this.tourney.roundList[currentRound-1].gameList[currentGame].gamePoints.Add(points);
-
-            if (gamesCounter + 1 >= numberOfGames)
-            {
-                gamesCounter = 0;
-                currentGame++;
-            }
-            else gamesCounter++;
+            pointsList.Add(points);
         }
+
+        return pointsList;
     }
 
-    public void NextRound()
+    private void fillGamePoints()
     {
-        if(AreAllInputsFilled())
+        List<Points> points = getGamePoints();
+
+        int counter = 0;
+        foreach(Game game in tourney.roundList[currentRound-1].gameList)
         {
-            alertText.color = Color.white;
-            alertText.text = "";
+            game.gamePoints.goodGainedVP = points[counter].goodGainedVP;
+            game.gamePoints.goodLostVP = points[counter].goodLostVP;
+            game.gamePoints.goodHasKilledLeader = points[counter].goodHasKilledLeader;
 
-            getGamePoints();
+            game.gamePoints.evilGainedVP = points[counter].evilGainedVP;
+            game.gamePoints.evilLostVP = points[counter].evilLostVP;
+            game.gamePoints.evilHasKilledLeader = points[counter].evilHasKilledLeader;
 
-            
-            string toTest = "Player: ";
-            foreach(Player player in tourney.rankedPlayerList)
-            {
-                Debug.Log(player.name + " Total VP: " + player.totalVP + " TotalGainedVP: " + player.totalGainedVP + " TotalLostVP: " + player.totalLostVP + " TotalKilled: " + player.leadersKilled);
-            }
-
-            if (currentRound == numberOfRounds)
-            {
-                // Move on to result screen
-            }
-            else
-            {
-                this.currentRound++;
-                tourney.CreateRound(false, currentRound, scenarioList[currentRound-1]);
-                scenarioText.text = scenarioList[currentRound-1];
-                roundText.text = "Round " + currentRound;
-                ClearAllInputs();
-                FillContainers(tourney.roundList[currentRound-1]);
-            }
-        }
-        else
-        {
-            alertText.color = Color.red;
-            alertText.text = "Fill all the inputs first";
+            counter++;
         }
     }
 }
