@@ -12,8 +12,6 @@ public class TourneyContainer : MonoBehaviour
     {
         this.tourneyListManager = MenuManager.Instance.tourneyListManager;
 
-        if (tourneyListManager == null) Debug.Log("no");
-
         Button button = transform.GetComponent<Button>();
 
         button.onClick.AddListener(() =>

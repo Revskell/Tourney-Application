@@ -118,7 +118,7 @@ public class Login : MonoBehaviour
         if(!Regex.IsMatch(password, PASSWORD_REGEX))
         {
             alertText.color = Color.red;
-            alertText.text = "Invalid credentials";
+            alertText.text = "Password is unsafe";
             ActivateButtons(true);
             yield break;
         }

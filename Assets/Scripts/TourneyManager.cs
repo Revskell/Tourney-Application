@@ -35,8 +35,9 @@ public class TourneyManager : MonoBehaviour
 
     public void StartTourney()
     {
-        this.tourney = CreateTourney();
+        Clear();
 
+        this.tourney = CreateTourney();
         this.currentRound = 1;
         this.tourney.FillRankedPlayerList();
 
@@ -47,6 +48,13 @@ public class TourneyManager : MonoBehaviour
         CreateContainers();
         tourney.CreateRound(currentRound, scenarioList[currentRound - 1]);
         FillContainers(tourney.roundList[0]);
+    }
+
+    private void Clear()
+    {
+        for (int i = pairingsContainer.transform.childCount - 1; i >= 0; i--) Destroy(pairingsContainer.transform.GetChild(i).gameObject);
+        scenarioList.Clear();
+        playerList.Clear();
     }
 
     private Tourney CreateTourney()
