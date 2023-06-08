@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -14,13 +15,13 @@ public class MenuManager : MonoBehaviour
     [SerializeField] public GameObject mainMenuContainer;
     [SerializeField] public GameObject createTourneyContainer;
     [SerializeField] public GameObject tourneyManagerContainer;
-    [SerializeField] public GameObject joinTourneyContainer;
     [SerializeField] public GameObject listTourneyContainer;
     [SerializeField] public GameObject tourneyResultsContainer;
 
     [SerializeField] public Login login;
     [SerializeField] public TourneyRequest tourneyRequest;
     [SerializeField] public TourneyResultsHandler tourneyResults;
+    [SerializeField] public TourneyListManager tourneyListManager;
 
     private void Awake()
     {
@@ -41,12 +42,11 @@ public class MenuManager : MonoBehaviour
         logInMenuContainer.SetActive(false);
         createTourneyContainer.SetActive(false);
         tourneyManagerContainer.SetActive(false);
-        joinTourneyContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
         tourneyResultsContainer.SetActive(false);
 
         if (this.username != null) this.username = username;
-        else username = "";
+        else this.username = "";
 
         welcomeText.text = "Welcome " + username;
     }
@@ -57,7 +57,6 @@ public class MenuManager : MonoBehaviour
         mainMenuContainer.SetActive(false);
         createTourneyContainer.SetActive(false);
         tourneyManagerContainer.SetActive(false);
-        joinTourneyContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
         tourneyResultsContainer.SetActive(false);
 
@@ -70,18 +69,6 @@ public class MenuManager : MonoBehaviour
         logInMenuContainer.SetActive(false);
         mainMenuContainer.SetActive(false);
         tourneyManagerContainer.SetActive(false);
-        joinTourneyContainer.SetActive(false);
-        listTourneyContainer.SetActive(false);
-        tourneyResultsContainer.SetActive(false);
-    }
-
-    public void ShowJoinTourneyMenu()
-    {
-        joinTourneyContainer.SetActive(true);
-        logInMenuContainer.SetActive(false);
-        mainMenuContainer.SetActive(false);
-        createTourneyContainer.SetActive(false);
-        tourneyManagerContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
         tourneyResultsContainer.SetActive(false);
     }
@@ -93,8 +80,9 @@ public class MenuManager : MonoBehaviour
         mainMenuContainer.SetActive(false);
         createTourneyContainer.SetActive(false);
         tourneyManagerContainer.SetActive(false);
-        joinTourneyContainer.SetActive(false);
         tourneyResultsContainer.SetActive(false);
+
+        tourneyListManager.ShowTourneyList();
     }
 
     public void ShowTourneyManagerMenu()
@@ -103,7 +91,6 @@ public class MenuManager : MonoBehaviour
         logInMenuContainer.SetActive(false);
         mainMenuContainer.SetActive(false);
         createTourneyContainer.SetActive(false);
-        joinTourneyContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
         tourneyResultsContainer.SetActive(false);
     }
@@ -115,13 +102,9 @@ public class MenuManager : MonoBehaviour
         logInMenuContainer.SetActive(false);
         createTourneyContainer.SetActive(false);
         tourneyManagerContainer.SetActive(false);
-        joinTourneyContainer.SetActive(false);
         listTourneyContainer.SetActive(false);
 
-        if (creatingTourney)
-        {
-            StartCoroutine(tourneyRequest.TryCreateTourney(tourney));
-        }
+        if (creatingTourney) StartCoroutine(tourneyRequest.TryCreateTourney(tourney));
 
         tourneyResults.ShowResults(tourney);
     }

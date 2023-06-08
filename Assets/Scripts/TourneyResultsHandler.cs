@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TourneyResultsHandler : MonoBehaviour
 {
@@ -13,7 +14,17 @@ public class TourneyResultsHandler : MonoBehaviour
 
     [SerializeField] public GameObject playerPrefab;
 
+    [SerializeField] public Button mainMenuButton;
+
     public Tourney tourney;
+
+    private void Awake()
+    {
+        mainMenuButton.onClick.AddListener(() =>
+        {
+            MenuManager.Instance.ShowMainMenu(MenuManager.Instance.username);
+        });
+    }
 
     public void ShowResults(Tourney tourney)
     {
@@ -21,8 +32,18 @@ public class TourneyResultsHandler : MonoBehaviour
 
         tourneyNameText.text = tourney.tourneyName;
 
+        Clear();
         FillScenarios();
         CreatePlayerContainers();
+    }
+
+    private void Clear()
+    {
+        for (int i = 0; i < scenarioContainer.transform.childCount; i++)
+        {
+            scenarioContainer.transform.Find("Scenario" + (i + 1) + "Text").GetComponent<TextMeshProUGUI>().text = "Scenario " + (i + 1) + ": ";
+        }
+        for (int i = playersContainer.transform.childCount - 1; i >= 0; i--) Destroy(playersContainer.transform.GetChild(i).gameObject);
     }
 
     private void FillScenarios()

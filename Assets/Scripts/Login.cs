@@ -66,7 +66,6 @@ public class Login : MonoBehaviour
         UnityWebRequest request = UnityWebRequest.Post(loginEndpoint, form);
         var handler = request.SendWebRequest();
 
-
         float startTime = 0.0f;
         while (!handler.isDone)
         {

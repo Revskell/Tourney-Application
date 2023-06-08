@@ -11,6 +11,10 @@ public class Player
     public int leadersKilled { get; set; }
     public int totalVP { get; set; }
 
+    public Player()
+    {
+    }
+
     public Player(string name, string nickname, string side)
     {
         this.name = name;

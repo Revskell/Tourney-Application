@@ -7,6 +7,10 @@ public class Game
 
     public Points gamePoints;
 
+    public Game()
+    {
+    }
+
     public Game(Player goodPlayer, Player evilPlayer, Points gamePoints)
     {
         this.goodPlayer = goodPlayer;

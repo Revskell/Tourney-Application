@@ -6,6 +6,10 @@ public class Round
     public string roundScenario;
     public List<Game> gameList;
 
+    public Round()
+    {
+    }
+
     public Round(int roundNumber, string roundScenario)
     {
         this.roundNumber = roundNumber;

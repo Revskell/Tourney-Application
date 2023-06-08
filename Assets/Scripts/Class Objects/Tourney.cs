@@ -18,6 +18,10 @@ public class Tourney
     public List<Round> roundList;
     public List<string> scenarioList;
 
+    public Tourney()
+    {
+    }
+
     public Tourney(string tourneyName, int rounds, List<string> scenarioList, int players, List<List<string>> playerList)
     {
         this.tourneyCode = Random.Range(10000000, 99999999); // later check that it's not in use

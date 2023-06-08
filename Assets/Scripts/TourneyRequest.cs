@@ -4,12 +4,14 @@ using UnityEngine.Networking;
 using Newtonsoft.Json;
 using System.Text;
 using System.Collections.Generic;
+using Unity.Serialization.Json;
 
 public class TourneyRequest : MonoBehaviour
 {
-    [SerializeField] private string loginEndpoint = "http://127.0.0.1:13756/tourney/get";
+    [SerializeField] private string getEndpoint = "http://127.0.0.1:13756/tourney/get";
     [SerializeField] private string createEndpoint = "http://127.0.0.1:13756/tourney/create";
 
+    public List<Tourney> tourneyList;
 
     public IEnumerator TryCreateTourney(Tourney tourney)
     {
@@ -38,7 +40,7 @@ public class TourneyRequest : MonoBehaviour
         }
         else
         {
-            Debug.Log("shit's fucked");
+            Debug.Log("Error in the server");
         }
 
         request.Dispose();
@@ -46,75 +48,202 @@ public class TourneyRequest : MonoBehaviour
         yield return null;
     }
 
-    public IEnumerator TryGetTourney(string username)
+    public IEnumerator TryGetTourney(string username, System.Action callback)
     {
+        string url = getEndpoint + "?rUsername=" + UnityWebRequest.EscapeURL(username);
+
+        // Create the UnityWebRequest
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        request.SetRequestHeader("Content-Type", "application/json");
+
+        // Send the request
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            // An error occurred
+            Debug.Log("Error: " + request.error);
+        }
+        else
+        {
+            // Request successful
+            string responseJson = request.downloadHandler.text;
+
+            // Parse the response JSON
+            ResponseData response = JsonUtility.FromJson<ResponseData>(responseJson);
+
+            // Check the response code
+            int responseCode = response.code;
+            if (responseCode == 0)
+            {
+                // Tourney found
+                List<TourneyData> tourneyDataList = response.data;
+                this.tourneyList = new List<Tourney>();
+                tourneyList.Clear();
+
+                foreach (TourneyData tourneyData in tourneyDataList)
+                {
+                    Tourney tourney = ParseTourneyData(tourneyData);
+                    tourneyList.Add(tourney);
+                }
+            }
+            else
+            {
+                // No tourneys found
+                Debug.Log("No tourneys found");
+            }
+        }
+
+        callback?.Invoke();
 
         yield return null;
     }
 
-    private void FillRoundsAndPlayers(WWWForm form, List<Round> roundList, List<Player> rankedPlayerList)
+    private Tourney ParseTourneyData(TourneyData tourneyData)
     {
-        // Add rRankedPlayerList
-        for (int i = 0; i < rankedPlayerList.Count; i++)
-        {
-            Player player = rankedPlayerList[i];
-            string playerNameKey = string.Format("rRankedPlayerList[{0}].name", i);
-            string playerNicknameKey = string.Format("rRankedPlayerList[{0}].nickname", i);
-            string playerSideKey = string.Format("rRankedPlayerList[{0}].side", i);
-            string playerTotalGainedVPKey = string.Format("rRankedPlayerList[{0}].totalGainedVP", i);
-            string playerTotalLostVPKey = string.Format("rRankedPlayerList[{0}].totalLostVP", i);
-            string playerLeadersKilledKey = string.Format("rRankedPlayerList[{0}].leadersKilled", i);
-            string playerTotalVPKey = string.Format("rRankedPlayerList[{0}].totalVP", i);
 
-            form.AddField(playerNameKey, player.name);
-            form.AddField(playerNicknameKey, player.nickname);
-            form.AddField(playerSideKey, player.side);
-            form.AddField(playerTotalGainedVPKey, player.totalGainedVP.ToString());
-            form.AddField(playerTotalLostVPKey, player.totalLostVP.ToString());
-            form.AddField(playerLeadersKilledKey, player.leadersKilled.ToString());
-            form.AddField(playerTotalVPKey, player.totalVP.ToString());
+        // Parse the tourney data and create a Tourney object
+        Tourney tourney = new Tourney();
+        tourney.tourneyOwner = tourneyData.tourneyOwner;
+        tourney.tourneyName = tourneyData.tourneyName;
+        tourney.nRounds = tourneyData.nRounds;
+        tourney.nPlayers = tourneyData.nPlayers;
+        tourney.rankedPlayerList = new List<Player>();
+        tourney.roundList = new List<Round>();
+        tourney.scenarioList = new List<string>();
+
+        // Parse the rankedPlayerList
+        foreach (PlayerData playerData in tourneyData.rankedPlayerList)
+        {
+            Player player = ParsePlayerData(playerData);
+
+            tourney.rankedPlayerList.Add(player);
         }
 
-        // Add rRoundList
-        for (int i = 0; i < roundList.Count; i++)
+        // Parse the roundList
+        foreach (RoundData roundData in tourneyData.roundList)
         {
-            Round round = roundList[i];
-            string roundNumberKey = string.Format("rRoundList[{0}].roundNumber", i);
-            string roundScenarioKey = string.Format("rRoundList[{0}].roundScenario", i);
+            Round round = new Round();
+            round.roundNumber = roundData.roundNumber;
+            round.roundScenario = roundData.roundScenario;
+            round.gameList = new List<Game>();
 
-            form.AddField(roundNumberKey, round.roundNumber.ToString());
-            form.AddField(roundScenarioKey, round.roundScenario);
-
-            // Add gameList within the round
-            for (int j = 0; j < round.gameList.Count; j++)
+            // Parse the gameList
+            foreach (GameData gameData in roundData.gameList)
             {
-                Game game = round.gameList[j];
-                string gameGoodPlayerNameKey = string.Format("rRoundList[{0}].gameList[{1}].goodPlayer.name", i, j);
-                string gameGoodPlayerNicknameKey = string.Format("rRoundList[{0}].gameList[{1}].goodPlayer.nickname", i, j);
-                string gameGoodPlayerSideKey = string.Format("rRoundList[{0}].gameList[{1}].goodPlayer.side", i, j);
-                string gameEvilPlayerNameKey = string.Format("rRoundList[{0}].gameList[{1}].evilPlayer.name", i, j);
-                string gameEvilPlayerNicknameKey = string.Format("rRoundList[{0}].gameList[{1}].evilPlayer.nickname", i, j);
-                string gameEvilPlayerSideKey = string.Format("rRoundList[{0}].gameList[{1}].evilPlayer.side", i, j);
-                string gameGoodGainedVPKey = string.Format("rRoundList[{0}].gameList[{1}].gamePoints.goodGainedVP", i, j);
-                string gameGoodLostVPKey = string.Format("rRoundList[{0}].gameList[{1}].gamePoints.goodLostVP", i, j);
-                string gameEvilGainedVPKey = string.Format("rRoundList[{0}].gameList[{1}].gamePoints.evilGainedVP", i, j);
-                string gameEvilLostVPKey = string.Format("rRoundList[{0}].gameList[{1}].gamePoints.evilLostVP", i, j);
-                string gameGoodHasKilledLeaderKey = string.Format("rRoundList[{0}].gameList[{1}].gamePoints.goodHasKilledLeader", i, j);
-                string gameEvilHasKilledLeaderKey = string.Format("rRoundList[{0}].gameList[{1}].gamePoints.evilHasKilledLeader", i, j);
+                Game game = new Game();
 
-                form.AddField(gameGoodPlayerNameKey, game.goodPlayer.name);
-                form.AddField(gameGoodPlayerNicknameKey, game.goodPlayer.nickname);
-                form.AddField(gameGoodPlayerSideKey, game.goodPlayer.side);
-                form.AddField(gameEvilPlayerNameKey, game.evilPlayer.name);
-                form.AddField(gameEvilPlayerNicknameKey, game.evilPlayer.nickname);
-                form.AddField(gameEvilPlayerSideKey, game.evilPlayer.side);
-                form.AddField(gameGoodGainedVPKey, game.gamePoints.goodGainedVP.ToString());
-                form.AddField(gameGoodLostVPKey, game.gamePoints.goodLostVP.ToString());
-                form.AddField(gameEvilGainedVPKey, game.gamePoints.evilGainedVP.ToString());
-                form.AddField(gameEvilLostVPKey, game.gamePoints.evilLostVP.ToString());
-                form.AddField(gameGoodHasKilledLeaderKey, game.gamePoints.goodHasKilledLeader.ToString());
-                form.AddField(gameEvilHasKilledLeaderKey, game.gamePoints.evilHasKilledLeader.ToString());
+                // Parse the goodPlayer
+                PlayerData goodPlayerData = gameData.goodPlayer;
+                Player goodPlayer = ParsePlayerData(goodPlayerData);
+                game.goodPlayer = goodPlayer;
+
+                // Parse the evilPlayer
+                PlayerData evilPlayerData = gameData.evilPlayer;
+                Player evilPlayer = ParsePlayerData(evilPlayerData);
+                game.evilPlayer = evilPlayer;
+
+                // Parse the gamePoints
+                PointsData pointsData = gameData.gamePoints;
+                Points points = ParsePointsData(pointsData);
+                game.gamePoints = points;
+
+                round.gameList.Add(game);
             }
+
+            tourney.roundList.Add(round);
         }
+
+        // Parse the scenarioList
+        foreach (string scenario in tourneyData.scenarioList) tourney.scenarioList.Add(scenario);
+
+        return tourney;
+    }
+
+    private Player ParsePlayerData(PlayerData playerData)
+    {
+        Player player = new Player();
+        player.name = playerData.name;
+        player.nickname = playerData.nickname;
+        player.side = playerData.side;
+        player.totalGainedVP = playerData.totalGainedVP;
+        player.totalLostVP = playerData.totalLostVP;
+        player.leadersKilled = playerData.leadersKilled;
+        player.totalVP = playerData.totalVP;
+
+        return player;
+    }
+
+    private Points ParsePointsData(PointsData pointsData)
+    {
+        Points points = new Points();
+        points.goodGainedVP = pointsData.goodGainedVP;
+        points.goodLostVP = pointsData.goodLostVP;
+        points.evilGainedVP = pointsData.evilGainedVP;
+        points.evilLostVP = pointsData.evilLostVP;
+        points.goodHasKilledLeader = pointsData.goodHasKilledLeader;
+        points.evilHasKilledLeader = pointsData.evilHasKilledLeader;
+
+        return points;
+    }
+
+    [System.Serializable]
+    public class TourneyData
+    {
+        public string tourneyOwner;
+        public string tourneyName;
+        public int nRounds;
+        public int nPlayers;
+        public List<PlayerData> rankedPlayerList;
+        public List<RoundData> roundList;
+        public List<string> scenarioList;
+    }
+
+    [System.Serializable]
+    public class PlayerData
+    {
+        public string name;
+        public string nickname;
+        public string side;
+        public int totalGainedVP;
+        public int totalLostVP;
+        public int leadersKilled;
+        public int totalVP;
+    }
+
+    [System.Serializable]
+    public class RoundData
+    {
+        public int roundNumber;
+        public string roundScenario;
+        public List<GameData> gameList;
+    }
+
+    [System.Serializable]
+    public class GameData
+    {
+        public PlayerData goodPlayer;
+        public PlayerData evilPlayer;
+        public PointsData gamePoints;
+    }
+
+    [System.Serializable]
+    public class PointsData
+    {
+        public int goodGainedVP;
+        public int goodLostVP;
+        public int evilGainedVP;
+        public int evilLostVP;
+        public bool goodHasKilledLeader;
+        public bool evilHasKilledLeader;
+    }
+
+    [System.Serializable]
+    public class ResponseData
+    {
+        public int code;
+        public string msg;
+        public List<TourneyData> data;
     }
 }
+
