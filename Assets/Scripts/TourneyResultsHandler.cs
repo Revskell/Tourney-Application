@@ -11,6 +11,7 @@ public class TourneyResultsHandler : MonoBehaviour
 
     [SerializeField] public GameObject playersContainer;
     [SerializeField] public GameObject scenarioContainer;
+    [SerializeField] public GameObject tourneyStatsContainer;
 
     [SerializeField] public GameObject playerPrefab;
 
@@ -34,6 +35,7 @@ public class TourneyResultsHandler : MonoBehaviour
 
         Clear();
         FillScenarios();
+        FillRounds();
         CreatePlayerContainers();
     }
 
@@ -48,9 +50,18 @@ public class TourneyResultsHandler : MonoBehaviour
 
     private void FillScenarios()
     {
-        for(int i = 0; i < tourney.scenarioList.Count; i++)
+        for(int i = 0; i < 6; i++)
         {
-            scenarioContainer.transform.Find("Scenario" + (i+1) + "Text").GetComponent<TextMeshProUGUI>().text += tourney.scenarioList[i];
+            if(i < tourney.scenarioList.Count) scenarioContainer.transform.Find("Scenario" + (i+1) + "Text").GetComponent<TextMeshProUGUI>().text += tourney.scenarioList[i];
+            else scenarioContainer.transform.Find("Scenario" + (i+1) + "Text").GetComponent<TextMeshProUGUI>().text = "";
+        }
+    }
+
+    private void FillRounds()
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            if (i >= tourney.nRounds) tourneyStatsContainer.transform.Find("Round" + (i + 1) + "Text").GetComponent<TextMeshProUGUI>().text = "";
         }
     }
 

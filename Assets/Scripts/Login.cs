@@ -10,8 +10,8 @@ public class Login : MonoBehaviour
     [SerializeField] private string loginEndpoint = "http://127.0.0.1:13756/account/login";
     [SerializeField] private string createEndpoint = "http://127.0.0.1:13756/account/create";
 
-    [SerializeField] private TMP_InputField usernameInputField;
-    [SerializeField] private TMP_InputField passwordInputField;
+    [SerializeField] private TMP_InputField usernameInput;
+    [SerializeField] private TMP_InputField passwordInput;
     [SerializeField] private TextMeshProUGUI alertText;
     [SerializeField] private Button loginButton;
     [SerializeField] private Button registerButton;
@@ -40,10 +40,10 @@ public class Login : MonoBehaviour
 
     private IEnumerator TryLogin()
     {
-        string username = usernameInputField.text;
-        string password = passwordInputField.text;
+        string username = usernameInput.text;
+        string password = passwordInput.text;
 
-        if(username.Length < 3 || username.Length > 30)
+        if(username.Length < 3 || username.Length > 24)
         {
             alertText.color = Color.red;
             alertText.text = "Invalid username";
@@ -78,7 +78,7 @@ public class Login : MonoBehaviour
         {
             LoginResponse response = JsonUtility.FromJson<LoginResponse>(request.downloadHandler.text);
 
-            if(response.code == 0) // login success
+            if(response.code == 0)
             {
                 ActivateButtons(false);
                 MenuManager.Instance.ShowMainMenu(response.data.username);
@@ -104,8 +104,8 @@ public class Login : MonoBehaviour
 
     private IEnumerator TryCreate()
     {
-        string username = usernameInputField.text;
-        string password = passwordInputField.text;
+        string username = usernameInput.text;
+        string password = passwordInput.text;
 
         if (username.Length < 3 || username.Length > 24)
         {
@@ -166,6 +166,11 @@ public class Login : MonoBehaviour
         request.Dispose();
 
         yield return null;
+    }
+
+    private void CheckUsernameAndPassword()
+    {
+
     }
 
     private void ActivateButtons(bool toggle)

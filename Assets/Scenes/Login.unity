@@ -2849,8 +2849,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loginEndpoint: http://127.0.0.1:13756/account/login
   createEndpoint: http://127.0.0.1:13756/account/create
-  usernameInputField: {fileID: 375980786}
-  passwordInputField: {fileID: 1193877201}
+  usernameInput: {fileID: 375980786}
+  passwordInput: {fileID: 1193877201}
   alertText: {fileID: 1691166037}
   loginButton: {fileID: 930280002}
   registerButton: {fileID: 1710542766}
@@ -13555,6 +13555,7 @@ MonoBehaviour:
   tourneyNameText: {fileID: 1160621746}
   playersContainer: {fileID: 979730635}
   scenarioContainer: {fileID: 876260378}
+  tourneyStatsContainer: {fileID: 1440602597}
   playerPrefab: {fileID: 134008316346354227, guid: e0eeae72d2daed54e95c435840c1ed53, type: 3}
   mainMenuButton: {fileID: 1150600349}
   tourney:
