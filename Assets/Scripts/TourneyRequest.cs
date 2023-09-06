@@ -4,7 +4,6 @@ using UnityEngine.Networking;
 using Newtonsoft.Json;
 using System.Text;
 using System.Collections.Generic;
-using Unity.Serialization.Json;
 
 public class TourneyRequest : MonoBehaviour
 {
@@ -12,6 +11,8 @@ public class TourneyRequest : MonoBehaviour
     [SerializeField] private string createEndpoint = "http://127.0.0.1:13756/tourney/create";
 
     public List<Tourney> tourneyList;
+    public bool hasBeenCreatedOrExists = false;
+    public bool tourneyFound = false;
 
     public IEnumerator TryCreateTourney(Tourney tourney)
     {
@@ -32,9 +33,12 @@ public class TourneyRequest : MonoBehaviour
             if (response.code == 0) // create success
             {
                 Debug.Log("Tourney created successfully");
+                hasBeenCreatedOrExists = true;
             }
             else
             {
+                if (response.msg.Equals("Tourney already exists")) hasBeenCreatedOrExists = true;
+                else hasBeenCreatedOrExists = false;
                 Debug.Log(response.msg);
             }
         }
@@ -77,6 +81,7 @@ public class TourneyRequest : MonoBehaviour
             if (responseCode == 0)
             {
                 // Tourney found
+                tourneyFound = true;
                 List<TourneyData> tourneyDataList = response.data;
                 this.tourneyList = new List<Tourney>();
                 tourneyList.Clear();
@@ -91,6 +96,7 @@ public class TourneyRequest : MonoBehaviour
             {
                 // No tourneys found
                 Debug.Log("No tourneys found");
+                tourneyFound = false;
             }
         }
 

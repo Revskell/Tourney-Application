@@ -92,7 +92,11 @@ public class Tourney
                     player.totalLostVP += points.goodLostVP;
                     if (points.goodHasKilledLeader) player.leadersKilled++;
                     if ((points.goodGainedVP - points.goodLostVP) > (points.evilGainedVP - points.evilLostVP)) player.totalVP += 3;
-                    else if ((points.goodGainedVP - points.goodLostVP) == (points.evilGainedVP - points.evilLostVP)) player.totalVP++;
+                    else if ((points.goodGainedVP - points.goodLostVP) == (points.evilGainedVP - points.evilLostVP))
+                    {
+                        Debug.Log("llego");
+                        player.totalVP++;
+                    }
                 }
                 else if (game.evilPlayer.name == player.name && game.evilPlayer.nickname == player.nickname)
                 {

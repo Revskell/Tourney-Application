@@ -81,6 +81,7 @@ public class Login : MonoBehaviour
             if(response.code == 0)
             {
                 ActivateButtons(false);
+                alertText.text = "Successfully Signed In";
                 MenuManager.Instance.ShowMainMenu(response.data.username);
             }
             else
@@ -168,11 +169,6 @@ public class Login : MonoBehaviour
         yield return null;
     }
 
-    private void CheckUsernameAndPassword()
-    {
-
-    }
-
     private void ActivateButtons(bool toggle)
     {
         loginButton.interactable = toggle;
@@ -184,5 +180,20 @@ public class Login : MonoBehaviour
         ActivateButtons(true);
         alertText.color = Color.white;
         alertText.text = null;
+    }
+
+    public void InputUsername(string username)
+    {
+        this.usernameInput.text = username;
+    }
+
+    public void InputPassword(string password)
+    {
+        this.passwordInput.text = password;
+    }
+
+    public string GetAlertText()
+    {
+        return alertText.text;
     }
 }
