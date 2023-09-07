@@ -26,12 +26,12 @@ public class PlayerRankingTest : MonoBehaviour
 
     private Tourney FillTourney()
     {
-        List<string> scenarioList = new List<string> { "Elimination"};
+        List<string> scenarioList = new List<string> { "Elimination" };
         List<List<string>> playerList = new List<List<string>>
-        {
-            new List<string> {"TestPlayerGood", "TPG", "Good"},
-            new List<string> {"TestPlayerEvil", "TPE", "Evil"}
-        };
+            {
+                new List<string> {"TestPlayerGood", "TPG", "Good"},
+                new List<string> {"TestPlayerEvil", "TPE", "Evil"}
+            };
 
         return new Tourney("TourneyTest", 1, scenarioList, 2, playerList);
     }

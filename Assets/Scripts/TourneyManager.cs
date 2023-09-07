@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class TourneyManager : MonoBehaviour
 {
 
-    private Tourney tourney;
+    public Tourney tourney;
     [SerializeField] public GameObject createMenuContainer;
     [SerializeField] public GameObject scenarioContainer;
     [SerializeField] public GameObject playersContainer;
@@ -176,7 +176,7 @@ public class TourneyManager : MonoBehaviour
         return players;
     }
 
-    private List<GameObject> GetContainers(string containerName)
+    public List<GameObject> GetContainers(string containerName)
     {
         List<GameObject> containers = new List<GameObject>();
 
